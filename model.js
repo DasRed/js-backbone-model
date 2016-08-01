@@ -3,14 +3,14 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define(['lodash', 'backbone', 'object-observer', 'url-parametrized', 'backbone-prototype-compatibility'], function (lodash, Backbone, ObjectObserver, UrlParametrized) {
-            return Backbone.ModelEx = factory(lodash, Backbone.Model, ObjectObserver, UrlParametrized, Backbone.compatiblity);
+            return Backbone.ModelEx = factory(lodash, Backbone.Model, ObjectObserver, UrlParametrized, Backbone.compatibility);
         });
 
     } else if (typeof exports !== 'undefined') {
-        Backbone.ModelEx = factory(lodash, Backbone.Model, root.ObjectObserver, root.UrlParametrized, Backbone.compatiblity);
+        Backbone.ModelEx = factory(lodash, Backbone.Model, root.ObjectObserver, root.UrlParametrized, Backbone.compatibility);
 
     } else {
-        Backbone.ModelEx = factory(lodash, Backbone.Model, root.ObjectObserver, root.UrlParametrized, Backbone.compatiblity);
+        Backbone.ModelEx = factory(lodash, Backbone.Model, root.ObjectObserver, root.UrlParametrized, Backbone.compatibility);
     }
 }(this, function (lodash, BackboneModel, ObjectObserver, UrlParametrized, compatibility) {
 
@@ -178,7 +178,7 @@
             enumerable: true,
             configurable: true,
             get: function () {
-                // object of model is not correct instanstiated... waits
+                // object of model is not correct instantiated... waits
                 if (this.cid === undefined) {
                     return undefined;
                 }
@@ -376,7 +376,6 @@
         var propertyName;
         var number;
         var valueConverted;
-        var instanceForProperty;
 
         // test properties in attributes if they are defined in attributeTypes
         for (propertyName in attributes) {
@@ -486,6 +485,7 @@
      * @returns {Model}
      */
     Model.prototype.restore = function () {
+        // TODO is this required to trigger something in Backbone.Model by calling this method?
         var previousAttributes = this.previousAttributes();
 
         for (var propertyName in this.attributesPrevious) {
@@ -505,7 +505,7 @@
      * save with default wait
      *
      * @param {Object}|{String} key
-     * @param {Mixed} val
+     * @param {*} val
      * @param {Object} options
      * @returns {Model}
      */
@@ -544,7 +544,7 @@
      * set function
      *
      * @param {Object}|{String} key
-     * @param {Mixed} val
+     * @param {string} val
      * @param {Object} options
      * @returns {Model}
      */
