@@ -7,10 +7,10 @@
         });
 
     } else if (typeof exports !== 'undefined') {
-        Backbone.ModelEx = factory(lodash, Backbone.Model, root.ObjectObserver, root.UrlParametrized, Backbone.compatibility);
+        root.Backbone.ModelEx = factory(root.lodash, root.Backbone.Model, root.ObjectObserver, root.UrlParametrized, root.Backbone.compatibility);
 
     } else {
-        Backbone.ModelEx = factory(lodash, Backbone.Model, root.ObjectObserver, root.UrlParametrized, Backbone.compatibility);
+        root.Backbone.ModelEx = factory(root.lodash, root.Backbone.Model, root.ObjectObserver, root.UrlParametrized, root.Backbone.compatibility);
     }
 }(this, function (lodash, BackboneModel, ObjectObserver, UrlParametrized, compatibility) {
 
