@@ -374,13 +374,21 @@
      * @returns {Object}
      */
     Model.prototype.parse = function (attributes, options) {
-        attributes = BackboneModel.prototype.parse.apply(this, arguments);
-
         var attributeType;
         var value;
         var propertyName;
         var number;
         var valueConverted;
+
+        // convert simple attributes to object by using the id if the type matched
+        if (typeof attributes !== 'object' && typeof attributes === this.attributeTypes[this.idAttribute]) {
+            value = attributes;
+            attributes = {};
+            attributes[this.idAttribute] = value;
+        }
+
+        // call parent
+        attributes = BackboneModel.prototype.parse.call(this, attributes, options);
 
         // test properties in attributes if they are defined in attributeTypes
         for (propertyName in attributes) {
