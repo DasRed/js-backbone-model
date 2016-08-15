@@ -61,6 +61,11 @@
             return model[propertyNameSetter](value);
         }
 
+        if (model[propertyName] !== undefined) {
+            model[propertyName] = value;
+            return model;
+        }
+
         if (model[propertyName] === undefined || model[propertyName] === null) {
             throw new Error('The model property "' + propertyName + '" must be defined to use for the attribute type "' + propertyType + '" on the attribute "' + propertyName + '".');
         }
