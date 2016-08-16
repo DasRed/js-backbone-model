@@ -580,7 +580,7 @@
         }
 
         if (options !== undefined && options.parse === true && typeof key === 'object') {
-            key = this.parse(key);
+            key = this.parse(key, options);
         }
 
         // call original set
