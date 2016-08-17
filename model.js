@@ -200,7 +200,7 @@
                     }
 
                     this._observer = new ObjectObserver(this.attributes, {
-                        autoObserve: false,
+                        autoObserve: true,
                         properties: properties
                     });
                 }
