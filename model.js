@@ -382,8 +382,8 @@
 
         // convert simple attributes to object by using the id if the type matched
         if (typeof attributes !== 'object' && typeof attributes === this.attributeTypes[this.idAttribute]) {
-            value = attributes;
-            attributes = {};
+            value                        = attributes;
+            attributes                   = {};
             attributes[this.idAttribute] = value;
         }
 
@@ -562,37 +562,13 @@
      * @returns {Model}
      */
     Model.prototype.set = function (key, val, options) {
-        var success  = undefined;
-        var complete = undefined;
-
-        if (key == null || typeof key === 'object') {
-            options = val;
-        }
-
-        if (options !== undefined) {
-            success  = options.success;
-            complete = options.complete;
-        }
-
         // store original values
         if (this.attributesPrevious === null) {
             this.attributesPrevious = lodash.clone(this.attributes);
         }
 
-        if (options !== undefined && options.parse === true && typeof key === 'object') {
-            key = this.parse(key, options);
-        }
-
         // call original set
         BackboneModel.prototype.set.apply(this, arguments);
-
-        if (success instanceof Function && options.xhr === undefined) {
-            success.call(this, this, undefined, options);
-        }
-
-        if (complete instanceof Function && options.xhr === undefined) {
-            complete.call(this, this, undefined, options);
-        }
 
         return this;
     };
