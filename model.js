@@ -51,7 +51,7 @@
      * @param {String} propertyName
      * @param {String} propertyType
      * @param {Model} value
-     * @returns {Model}|{Collection}
+     * @returns {Model|Collection}
      * @throws Error
      */
     function setInstanceForProperty(model, propertyName, propertyType, value) {
@@ -517,7 +517,7 @@
     /**
      * save with default wait
      *
-     * @param {Object}|{String} key
+     * @param {Object|String} key
      * @param {*} val
      * @param {Object} options
      * @returns {Model}
@@ -556,7 +556,7 @@
     /**
      * set function
      *
-     * @param {Object}|{String} key
+     * @param {Object|String} key
      * @param {string} val
      * @param {Object} options
      * @returns {Model}
