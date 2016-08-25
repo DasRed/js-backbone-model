@@ -557,14 +557,24 @@
      * set function
      *
      * @param {Object|String} key
-     * @param {string} val
+     * @param {*} val
      * @param {Object} options
      * @returns {Model}
      */
     Model.prototype.set = function (key, val, options) {
+        if (key !== undefined && arguments.length == 2) {
+            options = val;
+        }
+
         // store original values
         if (this.attributesPrevious === null) {
             this.attributesPrevious = lodash.clone(this.attributes);
+        }
+
+        if (options !== undefined && options.parse === true && key !== undefined && arguments.length == 2) {
+            BackboneModel.prototype.set.call(this, this.parse(key, options), options);
+
+            return this;
         }
 
         // call original set
