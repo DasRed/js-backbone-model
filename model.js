@@ -127,6 +127,7 @@
     Model.ATTRIBUTE_TYPE_TIME       = 'time';
     Model.ATTRIBUTE_TYPE_COLLECTION = 'collection';
     Model.ATTRIBUTE_TYPE_MODEL      = 'model';
+    Model.ATTRIBUTE_TYPE_IGNORE     = 'ignore';
 
     // prototype
     Model.prototype = Object.create(BackboneModel.prototype, {
@@ -193,7 +194,7 @@
                     var propertyType;
                     for (var propertyName in this.attributeTypes) {
                         propertyType = this.attributeTypes[propertyName];
-                        if (propertyType === Model.ATTRIBUTE_TYPE_COLLECTION || propertyType === Model.ATTRIBUTE_TYPE_MODEL) {
+                        if (propertyType === Model.ATTRIBUTE_TYPE_COLLECTION || propertyType === Model.ATTRIBUTE_TYPE_MODEL || propertyType === Model.ATTRIBUTE_TYPE_IGNORE) {
                             continue;
                         }
                         properties[propertyName] = true;
@@ -406,8 +407,13 @@
             }
 
             // convert
+            // ignore this one
+            if (attributeType === Model.ATTRIBUTE_TYPE_IGNORE) {
+                continue;
+            }
+
             // write to a collection property direct on the model
-            if (attributeType === Model.ATTRIBUTE_TYPE_COLLECTION) {
+            else if (attributeType === Model.ATTRIBUTE_TYPE_COLLECTION) {
                 getInstanceForProperty(this, propertyName, attributeType).reset(value, {
                     parse: true
                 });
