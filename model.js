@@ -396,7 +396,9 @@
             attributeType = this.attributeTypes[propertyName];
             // exists propertyName?
             if (attributeType === undefined) {
-                throw new Error('Can not parse model property "' + propertyName + '" in model. The property is not defined in "attributeTypes"!');
+                console.warn('Can not parse model property "' + propertyName + '" in model. The property is not defined in "attributeTypes"!', this, attributes, options);
+                delete attributes[propertyName];
+                continue;
             }
 
             value = attributes[propertyName];
@@ -414,23 +416,15 @@
 
             // write to a collection property direct on the model
             else if (attributeType === Model.ATTRIBUTE_TYPE_COLLECTION) {
-                getInstanceForProperty(this, propertyName, attributeType).reset(value, {
-                    parse: true
-                });
-                delete attributes[propertyName];
+                if ((value instanceof Array) === false) {
+                    console.warn('The model property "' + propertyName + '" must be a array but the value "' + String(value) + '" can not be converted to a array.', this, attributes, options);
+                    value = undefined;
+                }
             }
 
             // write to a model property direct on the model
             else if (attributeType === Model.ATTRIBUTE_TYPE_MODEL) {
-                if (value instanceof Model) {
-                    setInstanceForProperty(this, propertyName, attributeType, value);
-                }
-                else {
-                    getInstanceForProperty(this, propertyName, attributeType).set(value, {
-                        parse: true
-                    });
-                }
-                delete attributes[propertyName];
+                // this can be anything
             }
 
             // convert to number
@@ -438,7 +432,8 @@
                 if (typeof value !== 'number' || isNaN(value) === true) {
                     number = Number(value);
                     if (isNaN(number) === true) {
-                        throw new Error('The model property "' + propertyName + '" must be a number but the value "' + String(value) + '" can not be converted to a number.');
+                        console.warn('The model property "' + propertyName + '" must be a number but the value "' + String(value) + '" can not be converted to a number.', this, attributes, options);
+                        valueConverted = undefined;
                     }
 
                     value = number;
@@ -471,7 +466,8 @@
                 if ((value instanceof Date) === false) {
                     valueConverted = new Date(value);
                     if (isNaN(valueConverted.getTime()) === true) {
-                        throw new Error('Model attribute "' + propertyName + '" with "' + String(value) + '" is not an date.');
+                        console.warn('Model attribute "' + propertyName + '" with "' + String(value) + '" is not an date.', this, attributes, options);
+                        valueConverted = undefined;
                     }
                     value = valueConverted;
                 }
@@ -486,7 +482,7 @@
 
             // unknown type
             else {
-                throw new Error('Model attributeType "' + attributeType + '" does not exists.');
+                console.warn('Model attributeType "' + attributeType + '" does not exists.', this, attributes, options);
             }
 
             // write back
@@ -560,33 +556,159 @@
     };
 
     /**
-     * set function
-     *
-     * @param {Object|String} key
-     * @param {*} val
-     * @param {Object} options
-     * @returns {Model}
+     * @internal
+     * @return {Model}
      */
-    Model.prototype.set = function (key, val, options) {
-        if (key !== undefined && arguments.length == 2) {
-            options = val;
+    Model.prototype.setAttribute = function (propertyName, value, options) {
+        options = options || {};
+
+        var attributeType = this.attributeTypes[propertyName];
+
+        // write to a collection property direct on the model
+        if (attributeType === Model.ATTRIBUTE_TYPE_COLLECTION) {
+            getInstanceForProperty(this, propertyName, attributeType).reset(value, {
+                parse: true
+            });
         }
 
+        // write to a model property direct on the model
+        else if (attributeType === Model.ATTRIBUTE_TYPE_MODEL) {
+            if (value instanceof Model) {
+                setInstanceForProperty(this, propertyName, attributeType, value);
+            }
+            else {
+                getInstanceForProperty(this, propertyName, attributeType).set(value, {
+                    parse: true
+                });
+            }
+        }
+
+        // all other types
+        else {
+            if (options.unset === true) {
+                value = undefined;
+            }
+
+            // only set if value is different
+            if (this.attributes[propertyName] !== value) {
+                this.attributes[propertyName] = value;
+
+                // set id to new value
+                if (this.idAttribute === propertyName) {
+                    this.id = value;
+                }
+
+                // trigger event
+                if (options.silent !== true) {
+                    this.trigger('change:' + propertyName, this, value, options);
+                }
+            }
+        }
+
+        return this;
+    };
+
+    /**
+     * @internal
+     * @return {Model}
+     */
+    Model.prototype.setAttributes = function (attributes, options) {
+        options = options || {};
+
         // store original values
+        this._previousAttributes = lodash.clone(this.attributes);
         if (this.attributesPrevious === null) {
             this.attributesPrevious = lodash.clone(this.attributes);
         }
 
-        if (options !== undefined && options.parse === true && key !== undefined && arguments.length == 2) {
-            BackboneModel.prototype.set.call(this, this.parse(key, options), options);
+        // convert simple attributes to object by using the id if the type matched
+        if (typeof attributes !== 'object' && typeof attributes === this.attributeTypes[this.idAttribute]) {
+            var value                    = attributes;
+            attributes                   = {};
+            attributes[this.idAttribute] = value;
+        }
 
+        //validate
+        if (this._validate(attributes, options) === false) {
             return this;
         }
 
-        // call original set
-        BackboneModel.prototype.set.apply(this, arguments);
+        var self = this;
+
+        // first set only primitives
+        lodash.forEach(attributes, function (value, propertyName) {
+            if (self.attributeTypes[propertyName] !== Model.ATTRIBUTE_TYPE_COLLECTION && self.attributeTypes[propertyName] !== Model.ATTRIBUTE_TYPE_MODEL) {
+                self.setAttribute(propertyName, value, options);
+            }
+        });
+
+        // then set only models and collections
+        lodash.forEach(attributes, function (value, propertyName) {
+            if (self.attributeTypes[propertyName] === Model.ATTRIBUTE_TYPE_COLLECTION || self.attributeTypes[propertyName] === Model.ATTRIBUTE_TYPE_MODEL) {
+                self.setAttribute(propertyName, value, options);
+            }
+        });
+
+        // trigger event
+        if (options.silent !== true) {
+            this.trigger('change', this, options);
+        }
 
         return this;
+    };
+
+    /**
+     * set function
+     *
+     * @param {Object|String} attributes
+     * @param {*} [value]
+     * @param {Object} [options]
+     * @param {Boolean} [options.parse]
+     * @param {Boolean} [options.unset]
+     * @param {Boolean} [options.silent]
+     * @returns {Model}
+     */
+    Model.prototype.set = function (attributes, value, options) {
+        var key;
+
+        // attributes can be Object or Primitive
+        if (arguments.length == 1) {
+            // nothing to do
+        }
+        else if (arguments.length == 2) {
+            // attributes can be Object and value can only be Object and then is value the options
+            if (lodash.isPlainObject(attributes) === true) {
+                options = value;
+            }
+            // attributes can be Primitive and value can be Object and then is value the options
+            else if (lodash.isPlainObject(value) === true) {
+                options = value;
+            }
+            // attributes can be Primitive and value can only be Primitive
+            else {
+                key             = attributes;
+                attributes      = {};
+                attributes[key] = value;
+            }
+
+        }
+        // attributes can only be primitive
+        // value can only be primitive
+        // options can only be object
+        else if (arguments.length == 3) {
+            key             = attributes;
+            attributes      = {};
+            attributes[key] = value;
+        }
+
+        options = options || {};
+
+        // parse if needed
+        if (options.parse === true) {
+            attributes = this.parse(attributes, options);
+        }
+
+        return this.setAttributes(attributes, options);
     };
 
     /**
