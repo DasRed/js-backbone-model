@@ -88,8 +88,9 @@
     /**
      * Model
      *
-     * @param {Object} attributes
-     * @param {Object} options
+     * @param {Object} [attributes]
+     * @param {Object} [options]
+     * @param {Boolean} [options.parse]
      */
     function Model(attributes, options) {
         this.attributes = this.attributes || {};
@@ -324,7 +325,8 @@
     /**
      * destroy with default wait
      *
-     * @param {Object} options
+     * @param {Object} [options]
+     * @param {Boolean} [options.wait]
      * @returns {Model}
      */
     Model.prototype.destroy = function (options) {
@@ -339,7 +341,9 @@
     /**
      * fetch
      *
-     * @param {Object} options
+     * @param {Object} [options]
+     * @param {Boolean} [options.wait]
+     * @param {Function} [options.success]
      * @returns {Model}
      */
     Model.prototype.fetch = function (options) {
@@ -371,7 +375,7 @@
      * parsing of the attributes
      *
      * @param {Object} attributes
-     * @param {Object} options
+     * @param {Object} [options]
      * @returns {Object}
      */
     Model.prototype.parse = function (attributes, options) {
@@ -519,9 +523,9 @@
     /**
      * save with default wait
      *
-     * @param {Object|String} key
-     * @param {*} val
-     * @param {Object} options
+     * @param {Object|String} [key]
+     * @param {*} [val]
+     * @param {Object} [options]
      * @returns {Model}
      */
     Model.prototype.save = function (key, val, options) {
@@ -557,6 +561,11 @@
 
     /**
      * @internal
+     * @param {String} propertyName
+     * @param {*} value
+     * @param {Object} [options]
+     * @param {Boolean} [options.unset]
+     * @param {Boolean} [options.silent]
      * @return {Model}
      */
     Model.prototype.setAttribute = function (propertyName, value, options) {
@@ -610,6 +619,9 @@
 
     /**
      * @internal
+     * @param {Object} attributes
+     * @param {Object} [options]
+     * @param {Boolean} [options.silent]
      * @return {Model}
      */
     Model.prototype.setAttributes = function (attributes, options) {
@@ -714,7 +726,7 @@
     /**
      * to JSON
      *
-     * @param {Object} options
+     * @param {Object} [options]
      * @returns {Object}
      */
     Model.prototype.toJSON = function (options) {
