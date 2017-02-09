@@ -127,6 +127,7 @@
     Model.ATTRIBUTE_TYPE_DATETIME   = 'datetime';
     Model.ATTRIBUTE_TYPE_TIME       = 'time';
     Model.ATTRIBUTE_TYPE_COLLECTION = 'collection';
+    Model.ATTRIBUTE_TYPE_ARRAY      = 'array';
     Model.ATTRIBUTE_TYPE_MODEL      = 'model';
     Model.ATTRIBUTE_TYPE_IGNORE     = 'ignore';
 
@@ -195,7 +196,7 @@
                     var propertyType;
                     for (var propertyName in this.attributeTypes) {
                         propertyType = this.attributeTypes[propertyName];
-                        if (propertyType === Model.ATTRIBUTE_TYPE_COLLECTION || propertyType === Model.ATTRIBUTE_TYPE_MODEL || propertyType === Model.ATTRIBUTE_TYPE_IGNORE) {
+                        if (propertyType === Model.ATTRIBUTE_TYPE_COLLECTION || propertyType === Model.ATTRIBUTE_TYPE_MODEL || propertyType === Model.ATTRIBUTE_TYPE_ARRAY || propertyType === Model.ATTRIBUTE_TYPE_IGNORE) {
                             continue;
                         }
                         properties[propertyName] = true;
@@ -429,6 +430,14 @@
             // write to a model property direct on the model
             else if (attributeType === Model.ATTRIBUTE_TYPE_MODEL) {
                 // this can be anything
+            }
+
+            // convert to number
+            else if (attributeType === Model.ATTRIBUTE_TYPE_ARRAY) {
+                if ((value instanceof Array) === false) {
+                    console.warn('The model property "' + propertyName + '" must be an array but the value "' + String(value) + '" can not be converted to an array.', this, attributes, options);
+                    value = undefined;
+                }
             }
 
             // convert to number
