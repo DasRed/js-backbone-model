@@ -654,21 +654,23 @@
             return this;
         }
 
-        var self = this;
+        var propertyName;
 
-        // first set only primitives
-        lodash.forEach(attributes, function (value, propertyName) {
-            if (self.attributeTypes[propertyName] !== Model.ATTRIBUTE_TYPE_COLLECTION && self.attributeTypes[propertyName] !== Model.ATTRIBUTE_TYPE_MODEL) {
-                self.setAttribute(propertyName, value, options);
+        // set known properties
+        if (typeof attributes === 'object') {
+            for (propertyName in this.attributeTypes) {
+                if (attributes[propertyName] !== undefined) {
+                    this.setAttribute(propertyName, attributes[propertyName], options);
+                }
             }
-        });
 
-        // then set only models and collections
-        lodash.forEach(attributes, function (value, propertyName) {
-            if (self.attributeTypes[propertyName] === Model.ATTRIBUTE_TYPE_COLLECTION || self.attributeTypes[propertyName] === Model.ATTRIBUTE_TYPE_MODEL) {
-                self.setAttribute(propertyName, value, options);
+            // set unknown properties
+            for (propertyName in attributes) {
+                if (this.attributes[propertyName] === undefined) {
+                    this.setAttribute(propertyName, attributes[propertyName], options);
+                }
             }
-        });
+        }
 
         // trigger event
         if (options.silent !== true) {
