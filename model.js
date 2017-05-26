@@ -7,10 +7,10 @@
         });
 
     } else if (typeof exports !== 'undefined') {
-        root.Backbone.ModelEx = factory(root.lodash, root.Backbone.Model, root.ObjectObserver, root.UrlParametrized, root.Backbone.compatibility);
+        root.Backbone.ModelEx = factory(root.lodash || root._, root.Backbone.Model, root.ObjectObserver, root.UrlParametrized, root.Backbone.compatibility);
 
     } else {
-        root.Backbone.ModelEx = factory(root.lodash, root.Backbone.Model, root.ObjectObserver, root.UrlParametrized, root.Backbone.compatibility);
+        root.Backbone.ModelEx = factory(root.lodash || root._, root.Backbone.Model, root.ObjectObserver, root.UrlParametrized, root.Backbone.compatibility);
     }
 }(this, function (lodash, BackboneModel, ObjectObserver, UrlParametrized, compatibility) {
 
@@ -695,10 +695,10 @@
         var key;
 
         // attributes can be Object or Primitive
-        if (arguments.length == 1) {
+        if (arguments.length === 1) {
             // nothing to do
         }
-        else if (arguments.length == 2) {
+        else if (arguments.length === 2) {
             // attributes can be Object and value can only be Object and then is value the options
             if (lodash.isPlainObject(attributes) === true) {
                 options = value;
@@ -718,7 +718,7 @@
         // attributes can only be primitive
         // value can only be primitive
         // options can only be object
-        else if (arguments.length == 3) {
+        else if (arguments.length === 3) {
             key             = attributes;
             attributes      = {};
             attributes[key] = value;
