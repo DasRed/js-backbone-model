@@ -139,7 +139,7 @@ ChildModel.prototype = Object.create(Backbone.ModelEx, {
     },
     
     token: {
-        value: 'uitnqv398rcnq8thn437qfg78qghm39qhgf4893wx,
+        value: 'uitnqv398rcnq8thn437qfg78qghm39qhgf4893wx',
         enumerable: true,
         configurable: true,
         writable: true
