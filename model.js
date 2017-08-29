@@ -741,6 +741,7 @@
      * @returns {Object}
      */
     Model.prototype.toJSON = function (options) {
+        var self = this;
         var attributes = BackboneModel.prototype.toJSON.apply(this, arguments);
 
         // type conversion
@@ -749,14 +750,14 @@
             // write to a collection property direct on the model
             // write to a model property direct on the model
             if (propertyType === Model.ATTRIBUTE_TYPE_COLLECTION || propertyType === Model.ATTRIBUTE_TYPE_MODEL) {
-                var instance = getInstanceForProperty(this, propertyName, propertyType);
+                var instance = getInstanceForProperty(self, propertyName, propertyType);
                 if (instance !== null) {
-                    acc[propertyName] = getInstanceForProperty(this, propertyName, propertyType).toJSON(options);
+                    acc[propertyName] = getInstanceForProperty(self, propertyName, propertyType).toJSON(options);
                 }
             }
 
             return acc;
-        }, attributes, this);
+        }, attributes);
 
         return attributes;
     };
