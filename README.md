@@ -10,6 +10,7 @@ This model extends the Backbone.Model with some more features
 ## Install
 ```
 bower install backbone-model --save
+bower install js-backbone-model --save
 ```
 
 ## Usage

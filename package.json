@@ -1,0 +1,23 @@
+{
+  "name": "js-backbone-model",
+  "version": "1.2.4",
+  "description": "Better handling for backbone models with correct type casting.",
+  "main": "model.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DasRed/js-backbone-model.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DasRed/js-backbone-model/issues"
+  },
+  "homepage": "https://github.com/DasRed/js-backbone-model#readme",
+  "dependencies": {
+      "lodash": "^4.14.1",
+      "backbone": "^1.3.3",
+      "url-parametrized": "^1.0.5",
+      "js-object-observer": "^1.1.4",
+      "backbone-prototype-compatibility": "^1.0.5"
+  }
+}
