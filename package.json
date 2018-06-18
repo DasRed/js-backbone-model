@@ -1,6 +1,6 @@
 {
   "name": "js-backbone-model",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "Better handling for backbone models with correct type casting.",
   "main": "model.js",
   "repository": {

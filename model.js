@@ -105,9 +105,8 @@
             if (excludeProperties[key] === true) {
                 continue;
             }
-            if (this[key] !== undefined) {
-                this[key] = options[key];
-            }
+
+            this[key] = options[key];
         }
 
         // validation
